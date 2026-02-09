@@ -1,0 +1,778 @@
+============================================================  
+RenderDoc Analysis Report  
+Target: C:\Users\zhangbin24\Downloads\defult.rdc  
+============================================================  
+ 
+[1/8] analyze_rdc.py  
+正在分析: C:\Users\zhangbin24\Downloads\defult.rdc
+============================================================
+
+📊 Action 统计
+----------------------------------------
+  Drawcall 数量:  1637
+  Dispatch 数量:  12
+  Clear 数量:     25
+  Copy 数量:      3
+  Marker 数量:    1910
+
+🖼️ 纹理统计
+----------------------------------------
+  纹理总数:       689
+  Render Target:  48
+  Depth Target:   6
+  Shader Read:    689
+
+📐 最大纹理
+----------------------------------------
+  尺寸: 4096 x 2048 x 1
+  Mips: 10
+  数组大小: 1
+  格式: BC3_TYPELESS
+  字节大小: 11,184,800 bytes
+
+💾 缓冲区统计
+----------------------------------------
+  缓冲区总数:     1000
+  总大小:         73,046,880 bytes (69.66 MB)
+  最大缓冲区:     24,117,248 bytes (23.00 MB)
+
+🎬 帧信息
+----------------------------------------
+  帧号:           393211
+  文件大小(压缩): 213,595,864 bytes
+  文件大小(解压): 464,369,792 bytes
+
+============================================================
+分析完成!
+ 
+[2/8] analyze_memory.py  
+正在分析内存占用: C:\Users\zhangbin24\Downloads\defult.rdc
+======================================================================
+
+======================================================================
+                       📊 GPU 内存占用总览
+======================================================================
+  总 GPU 内存:          407.91 MB
+  ├─ 纹理:              338.25 MB (82.9%)
+  └─ 缓冲区:             69.66 MB (17.1%)
+
+----------------------------------------------------------------------
+                       🖼️ 纹理内存分析
+----------------------------------------------------------------------
+  纹理总数:       689
+  纹理总大小:     338.25 MB
+
+  📦 按格式分布 (Top 10):
+    格式                                   数量              大小       占比
+    ----------------------------------------------------------------
+    BC3_TYPELESS                        209       100.94 MB    29.8%
+    BC1_TYPELESS                        238        42.12 MB    12.5%
+    R16_TYPELESS                          2        40.50 MB    12.0%
+    R16G16B16A16_FLOAT                   14        38.73 MB    11.5%
+    R8G8B8A8_TYPELESS                   180        34.05 MB    10.1%
+    R8G8B8A8_UNORM                       19        23.50 MB     6.9%
+    R32_TYPELESS                          1        16.00 MB     4.7%
+    R32_FLOAT                             4        13.46 MB     4.0%
+    D32S8_TYPELESS                        3        10.25 MB     3.0%
+    R16G16_FLOAT                          2         8.00 MB     2.4%
+
+  📐 按维度分布:
+    2D             :   686 个,    294.59 MB (87.1%)
+    2D Array       :     3 个,     43.67 MB (12.9%)
+
+  🎯 按用途分布:
+    ShaderResource :   635 个,    179.78 MB (53.2%)
+    RenderTarget   :    48 个,     91.71 MB (27.1%)
+    DepthStencil   :     6 个,     66.75 MB (19.7%)
+
+----------------------------------------------------------------------
+                       💾 缓冲区内存分析
+----------------------------------------------------------------------
+  缓冲区总数:     1000
+  缓冲区总大小:   69.66 MB
+
+  📊 按大小分布:
+    Huge (> 16MB)     :     1 个,     23.00 MB ( 33.0%) ████████████████
+    Large (1-16MB)    :     8 个,     17.12 MB ( 24.6%) ████████████
+    Medium (64KB-1MB) :   170 个,     24.91 MB ( 35.8%) █████████████████
+    Small (1-64KB)    :   297 个,      4.50 MB (  6.5%) ███
+    Tiny (< 1KB)      :   524 个,    139.81 KB (  0.2%) 
+
+----------------------------------------------------------------------
+                    ⚠️ 大纹理列表 (> 16MB)
+----------------------------------------------------------------------
+    名称                             尺寸                   格式                             大小
+    ------------------------------------------------------------------------------------
+    Texture_ResourceId::402340     2048x2048x1 (m1)     R16_TYPELESS             40.00 MB
+
+----------------------------------------------------------------------
+                    ⚠️ 大缓冲区列表 (> 8MB)
+----------------------------------------------------------------------
+    名称                                                                 大小
+    ----------------------------------------------------------------------
+    Buffer_ResourceId::404917                                    23.00 MB
+
+======================================================================
+                       💡 内存优化建议
+======================================================================
+  • 未压缩纹理占用 138.42 MB, 考虑使用 BC/ASTC 压缩格式
+  • 有 1 个超大纹理 (>16MB), 考虑降低分辨率或使用流式加载
+  • 45 个纹理没有 Mipmap, 可能导致纹理抖动和带宽浪费
+  • 有 524 个小缓冲区 (<1KB), 考虑合并以减少管理开销
+
+======================================================================
+分析完成!
+ 
+[3/8] analyze_geometry.py  
+正在分析几何量: C:\Users\zhangbin24\Downloads\defult.rdc
+======================================================================
+
+📊 几何量总体统计
+--------------------------------------------------
+  总 Drawcall 数:    1,637
+  总顶点数:          4,913,728
+  总三角形数:        1,637,878
+  平均每 Draw 顶点:  3,001
+  平均每 Draw 三角:  1,000
+
+🏆 几何量最大的 Pass (Top 15)
+----------------------------------------------------------------------
+  Pass 名称                                      顶点数         三角形数    Draw数
+----------------------------------------------------------------------
+  Element <class Messiah::VisualGra..    1,572,864      524,288        1
+  Element <class Messiah::VisualGra..      300,000      100,000        1
+  Primitive <char2/1018/01/d21_3478..      112,563       37,521        1
+  Primitive <char2/1018/01/d21_3478..      112,563       37,521        1
+  Element <class Messiah::RenderEle..       38,016       12,672        1
+  Element <class Messiah::RenderEle..       32,868       10,956        1
+  Primitive <char3/30398/a1.model> ..       30,699       10,233        1
+  Primitive <char3/30398/a1.model> ..       30,699       10,233        1
+  Primitive <objects5/fb/fb_huangme..       30,528       10,176        1
+  Primitive <objects5/fb/fb_huangme..       29,358        9,786        1
+  Primitive <char3/30408/a1.model> ..       27,174        9,058        1
+  Primitive <char3/30408/a1.model> ..       27,174        9,058        1
+  Primitive <char2/1018/01/b21_829_..       26,001        8,667        1
+  Primitive <char2/1018/01/b21_829_..       26,001        8,667        1
+  Primitive <char2/1018/01/b21_829_..       26,001        8,667        1
+
+📈 几何量分布分析
+--------------------------------------------------
+  Pass 三角形数分布:
+        > 100K:    1 █
+      50K-100K:    1 █
+       10K-50K:    7 ███████
+        1K-10K:  248 ██████████████████████████████████████████████████
+          < 1K: 1380 ██████████████████████████████████████████████████
+
+⚠️ 高几何量 Drawcall (>10K 三角形)
+----------------------------------------------------------------------
+  Drawcall 名称                   事件ID          三角形      实例数
+----------------------------------------------------------------------
+  Draw_26430                   26430      524,288   262144
+  Draw_26452                   26452      100,000    50000
+  Draw_3066                     3066       37,521        1
+  Draw_5524                     5524       37,521        1
+  Draw_20487                   20487       12,672        1
+  Draw_20844                   20844       10,956        1
+  Draw_3393                     3393       10,233        1
+  Draw_6044                     6044       10,233        1
+  Draw_11607                   11607       10,176        1
+
+======================================================================
+分析完成!
+ 
+[4/8] analyze_vertex_attributes.py  
+正在分析顶点属性使用情况: C:\Users\zhangbin24\Downloads\defult.rdc
+================================================================================
+
+正在扫描所有 Draw 调用...
+  已处理 100 个 Draw...
+  已处理 200 个 Draw...
+  已处理 300 个 Draw...
+  已处理 400 个 Draw...
+  已处理 500 个 Draw...
+  已处理 600 个 Draw...
+  已处理 700 个 Draw...
+  已处理 800 个 Draw...
+  已处理 900 个 Draw...
+  已处理 1000 个 Draw...
+  已处理 1100 个 Draw...
+  已处理 1200 个 Draw...
+  已处理 1300 个 Draw...
+  已处理 1400 个 Draw...
+  已处理 1500 个 Draw...
+  已处理 1600 个 Draw...
+
+================================================================================
+                    顶点属性浪费分析结果
+================================================================================
+
+  总 Draw 调用数: 1637
+  存在属性浪费的 Draw 数: 415
+  浪费率: 25.4%
+
+  📊 带宽浪费估算:
+     总顶点数: 1,267,712
+     浪费的带宽: 9.87 MB
+
+================================================================================
+                    按语义统计
+================================================================================
+
+  语义名称                 提供次数         使用次数         浪费次数        
+  -------------------------------------------------------
+  TEXCOORD             2000         1722         278         
+  TANGENT              259          132          127         
+  BINORMAL             259          132          127         
+  BLENDWEIGHT          466          426          40          
+  BLENDINDICES         466          426          40          
+  NORMAL               1182         1168         14          
+  POSITION             1635         1635         0           
+  COLOR                336          336          0           
+  SV_InstanceID        0            2            0           
+
+================================================================================
+                浪费最严重的 Draw 调用 (前 20 个)
+================================================================================
+
+  EID 3066:
+    顶点数: 112,563
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E503B0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E50430>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 879.4 KB
+
+  EID 5524:
+    顶点数: 112,563
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E6FD70>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E6FDF0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 879.4 KB
+
+  EID 3456:
+    顶点数: 26,001
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021785E5B6B0>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E5B4F0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E5B770>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 304.7 KB
+
+  EID 6160:
+    顶点数: 26,001
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021786775070>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021786775030>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021786775130>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 304.7 KB
+
+  EID 3687:
+    顶点数: 23,568
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021785E645F0>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E64430>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E646B0>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 276.2 KB
+
+  EID 6886:
+    顶点数: 23,568
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x000002178677E4F0>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x000002178677E330>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x000002178677E5B0>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 276.2 KB
+
+  EID 3393:
+    顶点数: 30,699
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E598B0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E59930>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 239.8 KB
+
+  EID 6044:
+    顶点数: 30,699
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021786771730>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x00000217867717B0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 239.8 KB
+
+  EID 3414:
+    顶点数: 18,177
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021785E59D70>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E59BB0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E59E30>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 213.0 KB
+
+  EID 6202:
+    顶点数: 18,177
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021786775970>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x00000217867757B0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021786775A30>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 213.0 KB
+
+  EID 3666:
+    顶点数: 15,657
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021785E64170>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E640F0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E64230>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 183.5 KB
+
+  EID 6865:
+    顶点数: 15,657
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x000002178677E070>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x000002178677E030>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x000002178677E130>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 183.5 KB
+
+  EID 3475:
+    顶点数: 12,489
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021785E5BB30>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E5B970>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E5BBF0>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 146.4 KB
+
+  EID 6221:
+    顶点数: 12,489
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TEXCOORD1 (<Swig Object of type 'ResourceFormat *' at 0x0000021786775DF0>, 4 bytes)
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021786775C30>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021786775EB0>, 4 bytes)
+    每顶点浪费: 12 bytes
+    总浪费: 146.4 KB
+
+  EID 6082:
+    顶点数: 18,243
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021786771F30>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021786771FB0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 142.5 KB
+
+  EID 2676:
+    顶点数: 16,710
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E465B0>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E468B0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 130.5 KB
+
+  EID 5135:
+    顶点数: 16,710
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E65070>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E650F0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 130.5 KB
+
+  EID 5116:
+    顶点数: 15,456
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E64C30>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E64CB0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 120.8 KB
+
+  EID 2961:
+    顶点数: 15,120
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E4BF30>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E4BFB0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 118.1 KB
+
+  EID 5398:
+    顶点数: 15,120
+    着色器需要: TEXCOORD0, BLENDWEIGHT0, NORMAL0, BLENDINDICES0, POSITION0
+    浪费的属性:
+      - TANGENT (<Swig Object of type 'ResourceFormat *' at 0x0000021785E6C530>, 4 bytes)
+      - BINORMAL (<Swig Object of type 'ResourceFormat *' at 0x0000021785E6C5B0>, 4 bytes)
+    每顶点浪费: 8 bytes
+    总浪费: 118.1 KB
+
+================================================================================
+                         分析总结
+================================================================================
+
+  ⚠️  发现 415 个 Draw 调用存在顶点属性浪费
+     总计浪费带宽: 9.87 MB
+
+  💡 优化建议:
+     1. 为不同的 Shader 创建专用的顶点布局
+     2. 移除 Mesh 中着色器不需要的属性数据
+     3. 考虑使用顶点压缩技术减少不必要的数据传输
+
+     最常被浪费的属性: TEXCOORD(278次), TANGENT(127次), BINORMAL(127次), BLENDWEIGHT(40次), BLENDINDICES(40次)
+================================================================================
+
+分析完成!
+ 
+[5/8] analyze_shader_bindings.py  
+正在分析 Shader 绑定使用情况: C:\Users\zhangbin24\Downloads\defult.rdc
+================================================================================
+
+正在扫描所有 Draw/Dispatch 调用...
+  已处理 100 个 Draw/Dispatch...
+  已处理 100 个 Draw/Dispatch...
+  已处理 100 个 Draw/Dispatch...
+  已处理 200 个 Draw/Dispatch...
+  已处理 200 个 Draw/Dispatch...
+  已处理 200 个 Draw/Dispatch...
+  已处理 300 个 Draw/Dispatch...
+  已处理 300 个 Draw/Dispatch...
+  已处理 300 个 Draw/Dispatch...
+  已处理 400 个 Draw/Dispatch...
+  已处理 400 个 Draw/Dispatch...
+  已处理 400 个 Draw/Dispatch...
+  已处理 500 个 Draw/Dispatch...
+  已处理 500 个 Draw/Dispatch...
+  已处理 500 个 Draw/Dispatch...
+  已处理 600 个 Draw/Dispatch...
+  已处理 600 个 Draw/Dispatch...
+  已处理 600 个 Draw/Dispatch...
+  已处理 700 个 Draw/Dispatch...
+  已处理 700 个 Draw/Dispatch...
+  已处理 700 个 Draw/Dispatch...
+  已处理 800 个 Draw/Dispatch...
+  已处理 800 个 Draw/Dispatch...
+  已处理 800 个 Draw/Dispatch...
+  已处理 900 个 Draw/Dispatch...
+  已处理 900 个 Draw/Dispatch...
+  已处理 900 个 Draw/Dispatch...
+  已处理 1000 个 Draw/Dispatch...
+  已处理 1000 个 Draw/Dispatch...
+  已处理 1000 个 Draw/Dispatch...
+  已处理 1100 个 Draw/Dispatch...
+  已处理 1100 个 Draw/Dispatch...
+  已处理 1100 个 Draw/Dispatch...
+  已处理 1100 个 Draw/Dispatch...
+  已处理 1100 个 Draw/Dispatch...
+  已处理 1200 个 Draw/Dispatch...
+  已处理 1200 个 Draw/Dispatch...
+  已处理 1200 个 Draw/Dispatch...
+  已处理 1300 个 Draw/Dispatch...
+  已处理 1300 个 Draw/Dispatch...
+  已处理 1300 个 Draw/Dispatch...
+  已处理 1300 个 Draw/Dispatch...
+  已处理 1300 个 Draw/Dispatch...
+  已处理 1400 个 Draw/Dispatch...
+  已处理 1400 个 Draw/Dispatch...
+  已处理 1400 个 Draw/Dispatch...
+  已处理 1500 个 Draw/Dispatch...
+  已处理 1500 个 Draw/Dispatch...
+  已处理 1500 个 Draw/Dispatch...
+  已处理 1600 个 Draw/Dispatch...
+  已处理 1600 个 Draw/Dispatch...
+  已处理 1600 个 Draw/Dispatch...
+
+================================================================================
+                         分析结果汇总
+================================================================================
+
+  总 Draw/Dispatch 调用数: 1649
+  总绑定数量: 11281
+  未使用绑定数量: 0
+
+  📊 绑定利用率: 100.0%
+  ⚠️  未使用绑定: 0 (0.0%)
+
+================================================================================
+                      按绑定类型统计
+================================================================================
+
+  类型                   总绑定          未使用          未使用率        
+  -------------------------------------------------------
+  ConstantBuffer       7041         0            0.0%
+  SRV                  4218         0            0.0%
+  UAV                  22           0            0.0%
+
+================================================================================
+  ✅ 未发现静态未使用的绑定！
+     所有绑定的资源都被着色器代码使用。
+================================================================================
+
+分析完成!
+
+================================================================================
+说明:
+  - 此分析基于着色器编译时的静态分析 (staticallyUnused 属性)
+  - staticallyUnused=True 表示编译器认为该资源声明了但不会被访问
+  - 动态分支可能导致运行时实际不使用某些资源，但静态分析无法检测
+  - GetReadOnlyResources() 返回与 ShaderReflection.readOnlyResources 一一对应的绑定
+================================================================================
+  
+[6/8] analyze_overdraw.py  
+正在分析 Overdraw: C:\Users\zhangbin24\Downloads\defult.rdc
+======================================================================
+  检测到的最大 RT 分辨率: 1366 x 768
+
+======================================================================
+                      📊 Overdraw 分析总览
+======================================================================
+  总 Drawcall 数:         1,637
+  估算总像素写入量:       505,891,932
+  屏幕像素数:             1,049,088
+  平均 Overdraw 倍数:     482.22x
+  Overdraw 评级:          ❌ 较差
+
+----------------------------------------------------------------------
+                 🏆 Overdraw 最高的 Pass (Top 15)
+----------------------------------------------------------------------
+  Pass 名称                               Drawcall     Overdraw
+----------------------------------------------------------------------
+  Primitive <char2/1029/dummy.model..          1        1.00x
+  Primitive <char2/1017/01/a11_501/..          1        1.00x
+  Element <class Messiah::IndirectL..          1        1.00x
+  Element <class Messiah::SunlightP..          1        1.00x
+  Element <class Messiah::PostProce..          1        1.00x
+  Element <class Messiah::PostProce..          1        1.00x
+  Element <class Messiah::PostProce..          1        1.00x
+  Element <class Messiah::YUV2020De..          1        1.00x
+  Primitive <objects4/jiudingcheng/..          1        1.00x
+  Primitive <effect/dummy/effectdum..          1        1.00x
+  Primitive <char2/1029/dummy.model..          1        1.00x
+  Primitive <char2/1017/01/a11_501/..          1        1.00x
+  Element <class Messiah::RenderEle..          1        1.00x
+  Element <class Messiah::RenderEle..          1        1.00x
+  Element <class Messiah::RenderEle..          1        1.00x
+
+----------------------------------------------------------------------
+                    🔮 透明物体渲染分析
+----------------------------------------------------------------------
+  透明 Pass 数量: 1
+  透明 Drawcall 总数: 1
+  透明 Drawcall 占比: 0.1%
+
+  高 Overdraw 透明 Pass:
+    Element <class Messiah::PostProcess::Alp..: 1 draws, 1.00x overdraw
+
+----------------------------------------------------------------------
+                    📺 全屏绘制分析
+----------------------------------------------------------------------
+  全屏绘制次数: 167
+
+  按 Pass 分布:
+    Primitive <effect/dummy/effectdummy.mode..: 17 次
+    Element <class Messiah::PostProcess::Gau..: 12 次
+    Element <class Messiah::PostProcess::Dep..: 10 次
+    Element <class Messiah::PostProcess::Dow..: 10 次
+    Element <class Messiah::UIClipQuadElemen..: 10 次
+    Element <class Messiah::UITextElement> [..: 9 次
+    Element <class Messiah::RenderElementMes..: 8 次
+    Primitive <char2/1020/dummy.model> [Shad..: 5 次
+    Primitive <objects4/jiudingcheng/guangch..: 5 次
+    Element <class Messiah::PostProcess::Gau..: 5 次
+
+======================================================================
+                       💡 Overdraw 优化建议
+======================================================================
+  • 平均 Overdraw 较高，考虑实现深度预渲染 (Z-Prepass)
+  • 全屏绘制较多 (167 次)，考虑合并后处理 Pass
+
+======================================================================
+分析完成!
+
+注意: Overdraw 估算基于顶点数启发式，实际值需要结合 GPU 性能工具验证
+[6/8] analyze_overdraw.py  
+正在分析 Overdraw: C:\Users\zhangbin24\Downloads\defult.rdc
+======================================================================
+  检测到的最大 RT 分辨率: 1366 x 768
+
+======================================================================
+                      📊 Overdraw 分析总览
+======================================================================
+  总 Drawcall 数:         1,637
+  估算总像素写入量:       505,891,932
+  屏幕像素数:             1,049,088
+  平均 Overdraw 倍数:     482.22x
+  Overdraw 评级:          ❌ 较差
+
+----------------------------------------------------------------------
+                 🏆 Overdraw 最高的 Pass (Top 15)
+----------------------------------------------------------------------
+  Pass 名称                               Drawcall     Overdraw
+----------------------------------------------------------------------
+  Primitive <char2/1029/dummy.model..          1        1.00x
+  Primitive <char2/1017/01/a11_501/..          1        1.00x
+  Element <class Messiah::IndirectL..          1        1.00x
+  Element <class Messiah::SunlightP..          1        1.00x
+  Element <class Messiah::PostProce..          1        1.00x
+  Element <class Messiah::PostProce..          1        1.00x
+  Element <class Messiah::PostProce..          1        1.00x
+  Element <class Messiah::YUV2020De..          1        1.00x
+  Primitive <objects4/jiudingcheng/..          1        1.00x
+  Primitive <effect/dummy/effectdum..          1        1.00x
+  Primitive <char2/1029/dummy.model..          1        1.00x
+  Primitive <char2/1017/01/a11_501/..          1        1.00x
+  Element <class Messiah::RenderEle..          1        1.00x
+  Element <class Messiah::RenderEle..          1        1.00x
+  Element <class Messiah::RenderEle..          1        1.00x
+
+----------------------------------------------------------------------
+                    🔮 透明物体渲染分析
+----------------------------------------------------------------------
+  透明 Pass 数量: 1
+  透明 Drawcall 总数: 1
+  透明 Drawcall 占比: 0.1%
+
+  高 Overdraw 透明 Pass:
+    Element <class Messiah::PostProcess::Alp..: 1 draws, 1.00x overdraw
+
+----------------------------------------------------------------------
+                    📺 全屏绘制分析
+----------------------------------------------------------------------
+  全屏绘制次数: 167
+
+  按 Pass 分布:
+    Primitive <effect/dummy/effectdummy.mode..: 17 次
+    Element <class Messiah::PostProcess::Gau..: 12 次
+    Element <class Messiah::PostProcess::Dep..: 10 次
+    Element <class Messiah::PostProcess::Dow..: 10 次
+    Element <class Messiah::UIClipQuadElemen..: 10 次
+    Element <class Messiah::UITextElement> [..: 9 次
+    Element <class Messiah::RenderElementMes..: 8 次
+    Primitive <char2/1020/dummy.model> [Shad..: 5 次
+    Primitive <objects4/jiudingcheng/guangch..: 5 次
+    Element <class Messiah::PostProcess::Gau..: 5 次
+
+======================================================================
+                       💡 Overdraw 优化建议
+======================================================================
+  • 平均 Overdraw 较高，考虑实现深度预渲染 (Z-Prepass)
+  • 全屏绘制较多 (167 次)，考虑合并后处理 Pass
+
+======================================================================
+分析完成!
+
+注意: Overdraw 估算基于顶点数启发式，实际值需要结合 GPU 性能工具验证
+[7/8] analyze_pass_deps.py  
+✅ renderdoc 模块导入成功
+   模块路径: E:\code build\renderdoc-1.x\renderdoc-1.x\x64\Development\pymodules\renderdoc.pyd
+正在分析 Pass 依赖: C:\Users\zhangbin24\Downloads\defult.rdc
+文件大小: 204.0 MB
+======================================================================
+初始化 RenderDoc...
+文件 API: D3D11
+本地回放支持: 1
+正在创建回放控制器 (大文件可能需要1-2分钟)...
+  加载进度: 0%
+  加载进度: 0%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 25%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 26%
+  加载进度: 50%
+  加载进度: 50%
+  加载进度: 50%
+  加载进度: 50%
+  加载进度: 50%
+  加载进度: 50%
+  加载进度: 50%
+  加载进度: 75%
+  加载进度: 76%
+  加载进度: 76%
+[8/8] analyze_unused_resources.py  
+正在分析未使用资源: C:\Users\zhangbin24\Downloads\defult.rdc
+================================================================================
+
+资源统计:
+  Texture 数量: 689
+  Buffer 数量:  1000
+
+================================================================================
+                    分析 Texture 资源
+================================================================================
+
+  已使用 Texture: 689 个, 占用 333.13 MB
+  未使用 Texture: 0 个, 占用 0 B
+
+================================================================================
+                    分析 Buffer 资源
+================================================================================
+
+  已使用 Buffer: 996 个, 占用 69.66 MB
+  未使用 Buffer: 4 个, 占用 16 B
+
+  未使用的 Buffer (按大小排序, 显示前 30 个):
+  ResourceId                大小             
+  ----------------------------------------
+  ResourceId::1000000000000001365 4 B            
+  ResourceId::1000000000000001372 4 B            
+  ResourceId::1000000000000001569 4 B            
+  ResourceId::1000000000000001572 4 B            
+
+================================================================================
+                         汇总
+================================================================================
+
+  资源类型        已使用数量    未使用数量    已使用大小        未使用大小
+  ---------------------------------------------------------------------------
+  Texture            689             0           333.13 MB               0 B
+  Buffer             996             4            69.66 MB              16 B
+  ---------------------------------------------------------------------------
+  总计              1685             4           402.79 MB              16 B
+
+  📊 显存利用率: 100.0%
+  ⚠️  浪费显存:   16 B (0.0%)
+
+分析完成!
