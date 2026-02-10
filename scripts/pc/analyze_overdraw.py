@@ -61,25 +61,51 @@ def analyze_overdraw(rdc_path):
     rt_usage_count = defaultdict(int)  # RT 被写入次数
     transparent_passes = []  # 透明 Pass 列表
     fullscreen_draws = []  # 全屏绘制列表
+    eid_overdraw_stats = []  # 按 EID 统计的 Overdraw
     
     # 获取帧信息来计算分辨率
+    # 找主屏幕分辨率：优先找最常用的 RT 分辨率，而不是最大的
     textures = controller.GetTextures()
+    rt_resolutions = {}  # (width, height) -> count
     max_rt_width = 0
     max_rt_height = 0
     
     for tex in textures:
         if hasattr(tex, 'creationFlags') and hasattr(rd, 'TextureCategory'):
             if tex.creationFlags & rd.TextureCategory.ColorTarget:
+                res = (tex.width, tex.height)
+                rt_resolutions[res] = rt_resolutions.get(res, 0) + 1
                 if tex.width > max_rt_width:
                     max_rt_width = tex.width
                     max_rt_height = tex.height
     
-    if max_rt_width == 0:
-        max_rt_width = 1920
-        max_rt_height = 1080
+    # 找最常见的分辨率作为主屏幕（通常是游戏渲染分辨率）
+    main_screen_width = 1920
+    main_screen_height = 1080
     
-    total_screen_pixels = max_rt_width * max_rt_height
+    if rt_resolutions:
+        # 过滤掉太小的 RT（< 256）和探针类的正方形 RT
+        candidate_resolutions = [
+            (w, h, cnt) for (w, h), cnt in rt_resolutions.items() 
+            if w >= 256 and h >= 256 and w != h  # 排除正方形（通常是 CubeMap/探针）
+        ]
+        if candidate_resolutions:
+            # 按使用次数排序，取最常用的
+            candidate_resolutions.sort(key=lambda x: -x[2])
+            main_screen_width, main_screen_height, _ = candidate_resolutions[0]
+        else:
+            # 如果没有非正方形的，用最大的非超大 RT
+            for (w, h), cnt in sorted(rt_resolutions.items(), key=lambda x: -x[1]):
+                if w <= 4096 and h <= 4096:
+                    main_screen_width, main_screen_height = w, h
+                    break
+    
+    main_screen_pixels = main_screen_width * main_screen_height
     print(f"  检测到的最大 RT 分辨率: {max_rt_width} x {max_rt_height}")
+    print(f"  使用主屏幕分辨率计算: {main_screen_width} x {main_screen_height}")
+    
+    # 保留两个像素基准
+    total_screen_pixels = main_screen_pixels  # 用主屏幕分辨率作为 Overdraw 基准
     
     # ============ Pass 分析 ============
     current_pass = {
@@ -150,6 +176,18 @@ def analyze_overdraw(rdc_path):
             # 估算像素量
             pixels = estimate_draw_pixels(action, total_screen_pixels)
             current_pass['estimated_pixels'] += pixels
+            
+            # 计算该 EID 的 Overdraw
+            eid_overdraw = pixels / total_screen_pixels if total_screen_pixels > 0 else 0
+            eid_overdraw_stats.append({
+                'eid': action.eventId,
+                'name': action.customName or f"Draw_{action.eventId}",
+                'pass': current_pass['name'],
+                'pixels': pixels,
+                'overdraw': eid_overdraw,
+                'num_verts': action.numIndices if hasattr(action, 'numIndices') else 0,
+                'num_instances': action.numInstances if hasattr(action, 'numInstances') else 1
+            })
             
             # 检测全屏绘制
             num_verts = action.numIndices if hasattr(action, 'numIndices') else 0
@@ -231,6 +269,36 @@ def analyze_overdraw(rdc_path):
         name = p['name'][:33] + ".." if len(p['name']) > 35 else p['name']
         overdraw_str = f"{p['overdraw']:.2f}x"
         print(f"  {name:<35} {p['drawcalls']:>10} {overdraw_str:>12}")
+    
+    # ============ 按 EID 输出 Overdraw > 3x 的 Drawcall ============
+    high_overdraw_eids = [e for e in eid_overdraw_stats if e['overdraw'] > 3]
+    high_overdraw_eids.sort(key=lambda x: x['overdraw'], reverse=True)
+    
+    print("\n" + "-" * 70)
+    print("            🔥 Overdraw > 3x 的 Drawcall (按 EID)")
+    print("-" * 70)
+    
+    if high_overdraw_eids:
+        print(f"  共发现 {len(high_overdraw_eids)} 个 Drawcall 的 Overdraw > 3x\n")
+        print(f"  {'EID':<10} {'Overdraw':>10} {'顶点数':>12} {'实例数':>10} {'Pass 名称'}")
+        print("  " + "-" * 80)
+        for e in high_overdraw_eids[:50]:  # 最多显示 50 个
+            pass_name = e['pass'][:30] + ".." if len(e['pass']) > 32 else e['pass']
+            print(f"  {e['eid']:<10} {e['overdraw']:>9.2f}x {e['num_verts']:>12,} {e['num_instances']:>10,} {pass_name}")
+        
+        if len(high_overdraw_eids) > 50:
+            print(f"\n  ... 还有 {len(high_overdraw_eids) - 50} 个未显示")
+        
+        # 统计高 Overdraw 的主要 Pass
+        print("\n  📊 高 Overdraw Drawcall 所属 Pass 分布:")
+        pass_count = defaultdict(int)
+        for e in high_overdraw_eids:
+            pass_count[e['pass']] += 1
+        for pass_name, count in sorted(pass_count.items(), key=lambda x: -x[1])[:10]:
+            name = pass_name[:45] + ".." if len(pass_name) > 47 else pass_name
+            print(f"    {name}: {count} 个")
+    else:
+        print("  ✅ 没有发现 Overdraw > 3x 的 Drawcall")
     
     # 透明 Pass 分析
     if transparent_passes:

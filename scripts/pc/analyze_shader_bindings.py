@@ -18,7 +18,38 @@ RenderDoc Shader 绑定使用分析脚本
 
 import sys
 import os
+import signal
+import threading
 from collections import defaultdict
+
+# 超时设置 (秒)
+TIMEOUT_SECONDS = 300  # 5分钟
+
+class TimeoutError(Exception):
+    pass
+
+def timeout_handler():
+    """超时处理函数"""
+    print("\n" + "="*80)
+    print("⚠️  脚本执行超时 (超过5分钟)，强制退出...")
+    print("="*80)
+    os._exit(1)
+
+# 设置超时定时器
+timeout_timer = None
+
+def start_timeout():
+    """启动超时定时器"""
+    global timeout_timer
+    timeout_timer = threading.Timer(TIMEOUT_SECONDS, timeout_handler)
+    timeout_timer.daemon = True
+    timeout_timer.start()
+
+def cancel_timeout():
+    """取消超时定时器"""
+    global timeout_timer
+    if timeout_timer:
+        timeout_timer.cancel()
 
 def format_size(size_bytes):
     """格式化字节大小"""
@@ -304,7 +335,15 @@ def main():
     if len(sys.argv) < 2:
         print("用法: python analyze_shader_bindings.py <rdc_file_path>")
         sys.exit(1)
-    analyze_shader_bindings(sys.argv[1])
+    
+    # 启动5分钟超时定时器
+    start_timeout()
+    print(f"⏱️  超时设置: {TIMEOUT_SECONDS}秒 ({TIMEOUT_SECONDS//60}分钟)")
+    
+    try:
+        analyze_shader_bindings(sys.argv[1])
+    finally:
+        cancel_timeout()
 
 if __name__ == "__main__":
     main()
