@@ -18,12 +18,17 @@ RenderDoc Shader 绑定使用分析脚本
 
 import sys
 import os
+import gc
 import signal
 import threading
 from collections import defaultdict
 
 # 超时设置 (秒)
 TIMEOUT_SECONDS = 300  # 5分钟
+
+# 内存优化设置
+GC_INTERVAL = 200  # 每处理 N 个 Draw 执行一次 GC
+MAX_DETAIL_RECORDS = 100  # 最多保存的详情记录数
 
 class TimeoutError(Exception):
     pass
@@ -171,11 +176,19 @@ def analyze_shader_bindings(rdc_path):
     
     # 遍历所有 action
     def process_action(action):
-        nonlocal total_draws
+        nonlocal total_draws, unused_binding_details
         
         # 每100个draw打印进度
         if total_draws > 0 and total_draws % 100 == 0:
             print(f"  已处理 {total_draws} 个 Draw/Dispatch...", flush=True)
+        
+        # 内存优化: 每 GC_INTERVAL 个 Draw 执行一次垃圾回收
+        if total_draws > 0 and total_draws % GC_INTERVAL == 0:
+            # 限制详情记录数量，避免内存无限增长
+            if len(unused_binding_details) > MAX_DETAIL_RECORDS:
+                unused_binding_details = unused_binding_details[:MAX_DETAIL_RECORDS]
+            gc.collect()
+            print(f"  [内存优化] 执行 GC, 当前详情记录数: {len(unused_binding_details)}", flush=True)
         
         flags = int(action.flags)
         is_draw = flags & int(rd.ActionFlags.Drawcall)
